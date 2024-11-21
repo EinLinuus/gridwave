@@ -42,7 +42,16 @@ $items = [
 
 <div id="grid">
     <?php foreach($items as $item): ?>
-        <div class="item <?= $item ?>" style="background: <?= $item ?>"><?= $item ?></div>
+        <div class="item <?= $item ?>" style="background: <?= $item ?>">
+            <?php
+            echo $item;
+            $linesToShow = rand(1, 5) - 2;
+            if($linesToShow > 0) {
+                echo "<br>";
+                echo str_repeat("Lorem ipsum", $linesToShow);
+            }
+            ?>
+        </div>
     <?php endforeach; ?>
 </div>
 
@@ -54,6 +63,7 @@ $items = [
         // itemSelector: ".item",
         columns: 4,
         gap: 16,
+        sameHeight: true,
         breakpoints: {
             450: {
                 columns: 1,
@@ -62,10 +72,12 @@ $items = [
             768: {
                 columns: 2,
                 gap: 12,
+                sameHeight: true,
             },
             1024: {
                 columns: 3,
                 gap: 8,
+                sameHeight: true,
             },
         },
     });

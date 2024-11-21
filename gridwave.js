@@ -3,11 +3,13 @@ class GridWave {
      * @typedef {Object} GridWaveBreakpointConfig
      * @property {Number} columns The amount of columns to display
      * @property {Number} [gap] The gap between the columns
+     * @property {Boolean} [sameHeight] Whether the items should have the same height
      *
      * @typedef {Object} GridWaveConfig
      * @property {String} [itemSelector] The selector for the items
      * @property {Number} columns The amount of columns to display
      * @property {Number} [gap] The gap between the columns
+     * @property {Boolean} [sameHeight] Whether the items should have the same height
      * @property {Object.<string, GridWaveBreakpointConfig>} [breakpoints] The breakpoints
      *
      * @typedef {Object} GridWaveContainerSize
@@ -173,6 +175,11 @@ class GridWave {
             .forEach((item, index) => {
                 const rowIndex = Math.floor(index / columnAmount);
                 item.style.top = `${rowHeights.slice(0, rowIndex).reduce((acc, curr) => acc + curr, 0) + (rowIndex * gapY)}px`;
+
+                if(this.currentConfig.sameHeight) {
+                    const currentRowHeight = rowHeights[rowIndex];
+                    item.style.height = `${currentRowHeight}px`;
+                }
         });
 
         const totalHeight = rowHeights.reduce((acc, curr) => acc + curr, 0) + ((rowHeights.length - 1) * gapY);
