@@ -22,6 +22,9 @@ $items = [
 
 ?>
 <style>
+#grid {
+    transition: all 500ms ease;
+}
 .item {
     padding: 1rem;
     border-radius: 0.5rem;

@@ -17,10 +17,13 @@ class GridWave {
      */
 
     /**
-     * @param {HTMLElement} container The container element that contains all elements
+     * @param {HTMLElement | string} container The container element that contains all elements
      * @param {GridWaveConfig} [config] The configuration object
      */
     constructor(container, config) {
+        if(typeof container === "string") {
+            container = document.querySelector(container);
+        }
         this.container = container;
 
         if(config) {
@@ -62,8 +65,7 @@ class GridWave {
     }
 
     updateConfigToUse() {
-        console.log("HALLO")
-        const breakpoint = Object.entries(this.config.breakpoints)
+        const breakpoint = Object.entries(this.config.breakpoints ?? [])
             .sort(([a], [b]) => parseInt(a) - parseInt(b))
             .find(([breakpoint]) => window.innerWidth <= parseInt(breakpoint));
 
@@ -96,6 +98,8 @@ class GridWave {
             item.removeAttribute("data-gridwave-status");
             item.removeAttribute("aria-hidden");
         });
+
+        // TODO: Remove event listeners
     }
 
     /**
@@ -192,8 +196,8 @@ class GridWave {
     filter(filter) {
         let filterFn = filter;
 
-        if(!filter) {
-            filterFn = () => true;
+        if(!filter || filter === true || filter?.length === 0) {
+            filter = "*";
         }
 
         if(typeof filter === "string") {
