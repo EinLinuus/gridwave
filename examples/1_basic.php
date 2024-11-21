@@ -23,6 +23,16 @@
     grid.init({
         columns: 3,
         gap: 16,
+        breakpoints: {
+            768: {
+                columns: 2,
+                gap: 8,
+            },
+            480: {
+                columns: 1,
+                gap: 4,
+            },
+        },
     });
 
     document.querySelectorAll("button").forEach((button) => {
