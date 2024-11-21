@@ -15,7 +15,6 @@ if(empty($_GET["file"])) {
             continue;
         }
 
-//        echo "<li><a href='" . $requestUri . basename($file) . "'>" . basename($file) . "</a></li>";
         echo "<li><a href='?file=" . basename($file) . "'>" . basename($file) . "</a></li>";
     }
 

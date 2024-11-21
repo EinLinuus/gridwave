@@ -54,6 +54,20 @@ $items = [
         // itemSelector: ".item",
         columns: 4,
         gap: 16,
+        breakpoints: {
+            450: {
+                columns: 1,
+                gap: 16,
+            },
+            768: {
+                columns: 2,
+                gap: 12,
+            },
+            1024: {
+                columns: 3,
+                gap: 8,
+            },
+        },
     });
 
     form.addEventListener("submit", (event) => {

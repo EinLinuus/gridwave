@@ -1,9 +1,14 @@
 class GridWave {
     /**
+     * @typedef {Object} GridWaveBreakpointConfig
+     * @property {Number} columns The amount of columns to display
+     * @property {Number} [gap] The gap between the columns
+     *
      * @typedef {Object} GridWaveConfig
      * @property {String} [itemSelector] The selector for the items
      * @property {Number} columns The amount of columns to display
      * @property {Number} [gap] The gap between the columns
+     * @property {Object.<string, GridWaveBreakpointConfig>} [breakpoints] The breakpoints
      *
      * @typedef {Object} GridWaveContainerSize
      * @property {Number} width The width of the container
@@ -33,7 +38,47 @@ class GridWave {
             this.container.style.position = "relative";
         }
 
+        this.config.__memoryId = Math.random().toString(36).substring(7);
+        if(this.config.breakpoints) {
+            Object.entries(this.config.breakpoints).forEach(([key, value]) => {
+                value.__memoryId = Math.random().toString(36).substring(7);
+            });
+        }
+
+        this.updateConfigToUse()
+
         this.renderWithColumns();
+
+        let resizeTimeout = null;
+        window.addEventListener("resize", _ => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                this.updateConfigToUse();
+                this.rerender();
+            }, 100);
+        });
+    }
+
+    updateConfigToUse() {
+        console.log("HALLO")
+        const breakpoint = Object.entries(this.config.breakpoints)
+            .sort(([a], [b]) => parseInt(a) - parseInt(b))
+            .find(([breakpoint]) => window.innerWidth <= parseInt(breakpoint));
+
+        const currentConfig = this.currentConfig?.__memoryId;
+        if(breakpoint) {
+            this.currentConfig = breakpoint[1];
+        } else {
+            this.currentConfig = this.config;
+        }
+
+        if(currentConfig && currentConfig !== this.currentConfig.__memoryId) {
+            console.debug("GridWave: Switched to breakpoint", this.currentConfig.__memoryId);
+        }
+    }
+
+    rerender() {
+        this.renderWithColumns(this.currentFilter ?? null)
     }
 
     destroy() {
@@ -74,12 +119,16 @@ class GridWave {
     /**
      * @param {Function} [filterCallback]
      */
-    renderWithColumns(filterCallback = () => true) {
-        const columnAmount = this.config.columns;
+    renderWithColumns(filterCallback) {
+        if(!filterCallback) {
+            filterCallback = () => true;
+        }
+
+        const columnAmount = this.currentConfig.columns ?? 1;
         const size = this.getContainerSize();
         const items = this.getItems();
 
-        const [gapX, gapY] = Array.isArray(this.config.gap) ? this.config.gap : [this.config.gap, this.config.gap];
+        const [gapX, gapY] = Array.isArray(this.currentConfig.gap) ? this.currentConfig.gap : [this.currentConfig.gap, this.currentConfig.gap];
 
         const usableWidth = size.width - ((columnAmount - 1) * gapX);
         const columnWidth = usableWidth / columnAmount;
@@ -143,6 +192,8 @@ class GridWave {
         if(typeof filter === "string") {
             filterFn = (item) => item.matches(filter);
         }
+
+        this.currentFilter = filterFn;
 
         this.renderWithColumns(filterFn);
     }
