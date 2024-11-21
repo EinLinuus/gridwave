@@ -16,7 +16,9 @@
 - [Initialization](#initialization)
 - [Filtering](#filtering)
 - [Animations](#animations)
+- [Responsive Grid](#responsive-grid)
 - [Complete Example](#complete-example)
+- [More Examples](#more-examples)
 - [License](#license)
 - [Contributing](#contributing)
 - [Contact](#contact)
@@ -205,6 +207,18 @@ The following example demonstrates how to create a filterable grid with gridwave
     });
 </script>
 ```
+
+## More Examples
+
+For more examples, check out the [examples](examples) directory.
+
+For the best experience, I recommend cloning the repository and running a PHP server in the root directory:
+
+```bash
+php -S localhost:8000
+```
+
+Then you can access the examples at [http://localhost:8000/examples](http://localhost:8000/examples).
 
 ## License
 
