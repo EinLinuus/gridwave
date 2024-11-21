@@ -1,4 +1,8 @@
-![gridwave logo](logo.svg)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="logo-light.svg">
+  <source media="(prefers-color-scheme: light)" srcset="logo.svg">
+  <img alt="gridwave Logo" src="logo.svg">
+</picture>
 
 ---
 
