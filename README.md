@@ -14,6 +14,9 @@
 - [Introduction](#introduction)
 - [HTML Structure](#html-structure)
 - [Initialization](#initialization)
+- [Grid Options](#grid-options)
+    - [Fixed Columns](#fixed-columns)
+    - [Dynamic Columns](#dynamic-columns)
 - [Filtering](#filtering)
 - [Sorting](#sorting)
 - [Animations](#animations)
@@ -71,6 +74,43 @@ grid.init({
     gap: 16,
 });
 ```
+
+## Grid Options
+
+Note: If you are using [responsive grids](#responsive-grid), you can use the same options inside each breakpoint object.
+
+### Fixed Columns
+
+You can set a fixed number of columns for the grid:
+
+```javascript
+grid.init({
+    columns: 3,
+});
+```
+
+To add a gap between the grid items, use the `gap` option:
+
+```javascript
+grid.init({
+    columns: 3,
+    gap: 16, // use a number in pixels
+    gap: [16, 8], // you can also pass an array with two values for horizontal and vertical gap
+});
+```
+
+### Dynamic Columns
+
+Instead of setting a fixed number of columns, you can also specify a minimum column widht and the grid will automatically adjust the number of columns based on the container width:
+
+```javascript
+grid.init({
+    columns: "dynamic",
+    columnMinWidth: 200, // use a number in pixels
+});
+```
+
+You can use the same gap options as with fixed columns (see above).
 
 ## Filtering
 

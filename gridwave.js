@@ -90,7 +90,19 @@ class GridWave {
             this.currentSort = () => 0;
         }
 
-        this.renderWithFixedColumnAmount(this.getItems())
+        const items = this.getItems();
+
+        if(this.currentConfig.columns) {
+            if(this.currentConfig.columns === "dynamic") {
+                this.renderWithDynamicColumnAmount(items)
+                return;
+            }
+
+            this.renderWithFixedColumnAmount(items);
+            return;
+        }
+
+        console.error("GridWave: No render method found. Please make sure you have a valid configuration.");
     }
 
     destroy() {
@@ -161,53 +173,6 @@ class GridWave {
     }
 
     /**
-     * @param {HTMLElement[]} items
-     */
-    renderWithFixedColumnAmount(items) {
-        items = this.getItemsWithFiltersApplied(items);
-        items = this.getItemsWithSortApplied(items);
-
-        const columnAmount = this.currentConfig.columns ?? 1;
-        const size = this.getContainerSize();
-
-        const [gapX, gapY] = Array.isArray(this.currentConfig.gap) ? this.currentConfig.gap : [this.currentConfig.gap, this.currentConfig.gap];
-
-        const usableWidth = size.width - ((columnAmount - 1) * gapX);
-        const columnWidth = usableWidth / columnAmount;
-
-        const rowHeights = [];
-
-        items.forEach((item, realIndex) => {
-            const rowIndex = Math.floor(realIndex / columnAmount);
-            const columnIndex = realIndex % columnAmount;
-
-            item.style.position = "absolute";
-            item.style.width = `${columnWidth}px`;
-            item.style.left = `${columnIndex * columnWidth + (columnIndex * gapX)}px`;
-
-            item.style.height = "";
-            const height = item.offsetHeight;
-            if(!rowHeights[rowIndex] || rowHeights[rowIndex] < height) {
-                rowHeights[rowIndex] = height;
-            }
-        });
-
-        items
-            .forEach((item, index) => {
-                const rowIndex = Math.floor(index / columnAmount);
-                item.style.top = `${rowHeights.slice(0, rowIndex).reduce((acc, curr) => acc + curr, 0) + (rowIndex * gapY)}px`;
-
-                if(this.currentConfig.sameHeight) {
-                    const currentRowHeight = rowHeights[rowIndex];
-                    item.style.height = `${currentRowHeight}px`;
-                }
-        });
-
-        const totalHeight = rowHeights.reduce((acc, curr) => acc + curr, 0) + ((rowHeights.length - 1) * gapY);
-        this.container.style.height = `${totalHeight}px`;
-    }
-
-    /**
      * @param {Function | string} [filter]
      */
     filter(filter) {
@@ -239,6 +204,88 @@ class GridWave {
         this.currentSort = sortFn;
 
         this.rerender();
+    }
+
+    /**
+     * @param {HTMLElement[]} items
+     */
+    renderWithFixedColumnAmount(items) {
+        items = this.getItemsWithFiltersApplied(items);
+        items = this.getItemsWithSortApplied(items);
+
+        const [gapX, gapY] = Array.isArray(this.currentConfig.gap) ? this.currentConfig.gap : [this.currentConfig.gap, this.currentConfig.gap];
+
+        this.renderWithColumns(items, this.currentConfig.columns, gapX, gapY);
+    }
+
+    /**
+     * @param {HTMLElement[]} items
+     */
+    renderWithDynamicColumnAmount(items) {
+        items = this.getItemsWithFiltersApplied(items);
+        items = this.getItemsWithSortApplied(items);
+
+        const containerSize = this.getContainerSize();
+
+        const [gapX, gapY] = Array.isArray(this.currentConfig.gap) ? this.currentConfig.gap : [this.currentConfig.gap, this.currentConfig.gap];
+
+        const columnMinWidth = Math.min(this.currentConfig.columnMinWidth ?? 0, containerSize.width);
+
+        const twoColumnMinWidth = columnMinWidth * 2 + gapX;
+        if(containerSize.width < twoColumnMinWidth) {
+            this.renderWithColumns(items, 1, gapX, gapY);
+            return;
+        }
+
+        const availableWidthWithoutFirstColumn = containerSize.width - columnMinWidth;
+        const extensionColumnWidth = columnMinWidth + gapX;
+        const columnAmount = Math.floor(availableWidthWithoutFirstColumn / extensionColumnWidth) + 1;
+
+        this.renderWithColumns(items, columnAmount, gapX, gapY);
+    }
+
+    /**
+     * @param {HTMLElement[]} items
+     * @param {Number} columnAmount
+     * @param {Number} gapX
+     * @param {Number} gapY
+     */
+    renderWithColumns(items, columnAmount, gapX, gapY) {
+        const size = this.getContainerSize();
+
+        const usableWidth = size.width - ((columnAmount - 1) * gapX);
+        const columnWidth = usableWidth / columnAmount;
+
+        const rowHeights = [];
+
+        items.forEach((item, realIndex) => {
+            const rowIndex = Math.floor(realIndex / columnAmount);
+            const columnIndex = realIndex % columnAmount;
+
+            item.style.position = "absolute";
+            item.style.width = `${columnWidth}px`;
+            item.style.left = `${columnIndex * columnWidth + (columnIndex * gapX)}px`;
+
+            item.style.height = "";
+            const height = item.offsetHeight;
+            if(!rowHeights[rowIndex] || rowHeights[rowIndex] < height) {
+                rowHeights[rowIndex] = height;
+            }
+        });
+
+        items
+            .forEach((item, index) => {
+                const rowIndex = Math.floor(index / columnAmount);
+                item.style.top = `${rowHeights.slice(0, rowIndex).reduce((acc, curr) => acc + curr, 0) + (rowIndex * gapY)}px`;
+
+                if(this.currentConfig.sameHeight) {
+                    const currentRowHeight = rowHeights[rowIndex];
+                    item.style.height = `${currentRowHeight}px`;
+                }
+            });
+
+        const totalHeight = rowHeights.reduce((acc, curr) => acc + curr, 0) + ((rowHeights.length - 1) * gapY);
+        this.container.style.height = `${totalHeight}px`;
     }
 
 }
