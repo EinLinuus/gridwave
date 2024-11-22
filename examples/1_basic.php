@@ -1,9 +1,3 @@
-<style>
-    #grid, .grid-item {
-        transition: all 500ms ease;
-    }
-</style>
-
 <button data-filter="">All</button>
 <button data-filter=".category1">Category 1</button>
 <button data-filter=".category2">Category 2</button>

@@ -152,19 +152,43 @@ grid.sort();
 
 ## Animations
 
-gridwave modifies style properties of the grid items. To animate these changes, you can use CSS transitions. Example:
+By default, gridwave uses a 500ms ease transition. You can change the duration and timing function like this:
 
-```css
-.grid-item {
-    transition: all 500ms ease;
-}
+```javascript
+grid.init({
+    transition: 300, // use a number in milliseconds
+    transitionMethod: "ease-in-out", // use a valid CSS timing function
+});
 ```
 
-If you want to also animate the height of the grid container, simply add the transition property to the grid container as well:
+To disable animations, set the `transition` option to `false`:
+
+```javascript
+grid.init({
+    transition: false,
+});
+```
+
+The transition options can also be set for each breakpoint individually:
+
+```javascript
+grid.init({
+    transition: 300,
+    transitionMethod: "ease-in-out",
+    breakpoints: {
+        768: {
+            transition: false, // disable animations for smaller screens
+        },
+    },
+});
+```
+
+Since gridwave uses CSS variables for the transition, you can also override the default values in your CSS:
 
 ```css
-#grid, .grid-item {
-    transition: all 500ms ease;
+:root {
+    --gridwave-transition-duration: 300ms;
+    --gridwave-transition-timing-function: ease-in-out;
 }
 ```
 
@@ -221,12 +245,6 @@ grid.init({
 The following example demonstrates how to create a filterable grid with gridwave:
 
 ```html
-<style>
-    #grid, .grid-item {
-        transition: all 500ms ease;
-    }
-</style>
-
 <button data-filter="">All</button>
 <button data-filter=".category1">Category 1</button>
 <button data-filter=".category2">Category 2</button>

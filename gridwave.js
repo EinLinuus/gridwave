@@ -1,15 +1,23 @@
 class GridWave {
     /**
      * @typedef {Object} GridWaveBreakpointConfig
-     * @property {Number} columns The amount of columns to display
+     * @property {Number | "dynamic"} [columns] The amount of columns to display
+     * @property {Number} [columnMinWidth] The minimum width of a column if dynamic columns are used
      * @property {Number} [gap] The gap between the columns
      * @property {Boolean} [sameHeight] Whether the items should have the same height
+     * @property {Function} [renderer] A custom render function
+     * @property {Number | false} [transition] The transition duration in ms or false to disable transitions
+     * @property {String} [transitionMethod] The transition timing function
      *
      * @typedef {Object} GridWaveConfig
      * @property {String} [itemSelector] The selector for the items
-     * @property {Number} columns The amount of columns to display
+     * @property {Number | "dynamic"} [columns] The amount of columns to display
+     * @property {Number} [columnMinWidth] The minimum width of a column if dynamic columns are used
      * @property {Number} [gap] The gap between the columns
      * @property {Boolean} [sameHeight] Whether the items should have the same height
+     * @property {Function} [renderer] A custom render function
+     * @property {Number | false} [transition] The transition duration in ms or false to disable transitions
+     * @property {String} [transitionMethod] The transition timing function
      * @property {Object.<string, GridWaveBreakpointConfig>} [breakpoints] The breakpoints
      *
      * @typedef {Object} GridWaveContainerSize
@@ -21,6 +29,11 @@ class GridWave {
      * @param {GridWaveConfig} [config] The configuration object
      */
     constructor(container, config) {
+        if(!window.gridwaveInstalled) {
+            this.injectStyles();
+            window.gridwaveInstalled = true;
+        }
+
         if(typeof container === "string") {
             container = document.querySelector(container);
         }
@@ -29,6 +42,21 @@ class GridWave {
         if(config) {
             this.init(config);
         }
+    }
+
+    injectStyles() {
+        const style = document.createElement("style");
+        style.innerHTML = `
+            [data-gridwave-animations="true"],
+            [data-gridwave-animations="true"] > [data-gridwave-status] {
+                transition: all var(--gridwave-transition-duration, 500ms) var(--gridwave-transition-timing, ease);
+            }
+            [data-gridwave-status="hidden"] {
+                transform: scale(0);
+                opacity: 0;
+            }
+        `;
+        document.head.appendChild(style);
     }
 
     /**
@@ -43,16 +71,7 @@ class GridWave {
             this.container.style.position = "relative";
         }
 
-        this.config.__memoryId = Math.random().toString(36).substring(7);
-        if(this.config.breakpoints) {
-            Object.entries(this.config.breakpoints).forEach(([key, value]) => {
-                value.__memoryId = Math.random().toString(36).substring(7);
-            });
-        }
-
-        this.updateConfigToUse()
-
-        this.rerender();
+        this.updateConfig(config);
 
         let resizeTimeout = null;
         window.addEventListener("resize", _ => {
@@ -62,6 +81,19 @@ class GridWave {
                 this.rerender();
             }, 100);
         });
+    }
+
+    updateConfig(config) {
+        this.config = config;
+        this.config.__memoryId = Math.random().toString(36).substring(7);
+        if(this.config.breakpoints) {
+            Object.entries(this.config.breakpoints).forEach(([key, value]) => {
+                value.__memoryId = Math.random().toString(36).substring(7);
+            });
+        }
+
+        this.updateConfigToUse();
+        this.rerender();
     }
 
     updateConfigToUse() {
@@ -76,8 +108,28 @@ class GridWave {
             this.currentConfig = this.config;
         }
 
-        if(currentConfig && currentConfig !== this.currentConfig.__memoryId) {
+        if(currentConfig !== this.currentConfig.__memoryId) {
             console.debug("GridWave: Switched to breakpoint", this.currentConfig.__memoryId);
+            this.updateAnimationConfig();
+        }
+    }
+
+    updateAnimationConfig() {
+        if(this.currentConfig.transition === false) {
+            this.container.setAttribute("data-gridwave-animations", "false");
+            return;
+        }
+        this.container.setAttribute("data-gridwave-animations", "true");
+        if(this.currentConfig.transition) {
+            this.container.style.setProperty("--gridwave-transition-duration", `${this.currentConfig.transition}ms`);
+        } else {
+            this.container.style.removeProperty("--gridwave-transition-duration");
+        }
+
+        if(this.currentConfig.transitionMethod) {
+            this.container.style.setProperty("--gridwave-transition-timing", this.currentConfig.transitionMethod);
+        } else {
+            this.container.style.removeProperty("--gridwave-transition-timing");
         }
     }
 
@@ -91,6 +143,10 @@ class GridWave {
         }
 
         const items = this.getItems();
+        if(this.currentConfig.renderer) {
+            this.currentConfig.renderer(items);
+            return;
+        }
 
         if(this.currentConfig.columns) {
             if(this.currentConfig.columns === "dynamic") {
@@ -113,8 +169,8 @@ class GridWave {
             item.style.width = "";
             item.style.left = "";
             item.style.top = "";
-            item.style.transform = "";
-            item.style.opacity = "";
+            // item.style.transform = "";
+            // item.style.opacity = "";
             item.removeAttribute("data-gridwave-status");
             item.removeAttribute("aria-hidden");
         });
@@ -149,15 +205,15 @@ class GridWave {
     getItemsWithFiltersApplied(items) {
         return items.filter((item) => {
             if(!this.currentFilter(item)) {
-                item.style.transform = "scale(0)";
-                item.style.opacity = "0";
+                // item.style.transform = "scale(0)";
+                // item.style.opacity = "0";
                 item.setAttribute("data-gridwave-status", "hidden");
                 item.setAttribute("aria-hidden", "true");
                 return false;
             }
 
-            item.style.transform = "";
-            item.style.opacity = "";
+            // item.style.transform = "";
+            // item.style.opacity = "";
             item.setAttribute("data-gridwave-status", "visible");
             item.removeAttribute("aria-hidden");
             return true;

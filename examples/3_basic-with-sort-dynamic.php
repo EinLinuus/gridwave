@@ -10,14 +10,10 @@ for($i = 0; $i < 10; $i++) {
 
 ?>
 <style>
-#grid {
-    transition: all 500ms ease;
-}
 .item {
     padding: 1rem;
     border-radius: 0.5rem;
     margin-bottom: 1rem;
-    transition: all 500ms ease;
 }
 </style>
 
