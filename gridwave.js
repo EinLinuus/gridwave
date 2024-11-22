@@ -90,7 +90,7 @@ class GridWave {
             this.currentSort = () => 0;
         }
 
-        this.renderWithColumns(this.getItems())
+        this.renderWithFixedColumnAmount(this.getItems())
     }
 
     destroy() {
@@ -163,7 +163,7 @@ class GridWave {
     /**
      * @param {HTMLElement[]} items
      */
-    renderWithColumns(items) {
+    renderWithFixedColumnAmount(items) {
         items = this.getItemsWithFiltersApplied(items);
         items = this.getItemsWithSortApplied(items);
 

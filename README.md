@@ -225,6 +225,16 @@ The following example demonstrates how to create a filterable grid with gridwave
 </script>
 ```
 
+## Dynamic Content
+
+If you modified the grid items or added new items, you can call the `rerender` method to update the grid:
+
+```javascript
+grid.rerender();
+```
+
+This is especially useful when you're fetching new items from an API or adding items dynamically.
+
 ## More Examples
 
 For more examples, check out the [examples](examples) directory.
