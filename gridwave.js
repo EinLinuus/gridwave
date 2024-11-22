@@ -185,6 +185,7 @@ class GridWave {
             item.style.width = `${columnWidth}px`;
             item.style.left = `${columnIndex * columnWidth + (columnIndex * gapX)}px`;
 
+            item.style.height = "";
             const height = item.offsetHeight;
             if(!rowHeights[rowIndex] || rowHeights[rowIndex] < height) {
                 rowHeights[rowIndex] = height;
