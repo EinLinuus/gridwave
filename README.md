@@ -19,6 +19,7 @@
 - [Animations](#animations)
 - [Responsive Grid](#responsive-grid)
 - [Complete Example](#complete-example)
+- [Dynamic Content](#dynamic-content)
 - [More Examples](#more-examples)
 - [License](#license)
 - [Contributing](#contributing)
