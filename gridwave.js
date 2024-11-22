@@ -52,7 +52,7 @@ class GridWave {
 
         this.updateConfigToUse()
 
-        this.renderWithColumns();
+        this.rerender();
 
         let resizeTimeout = null;
         window.addEventListener("resize", _ => {
@@ -82,7 +82,15 @@ class GridWave {
     }
 
     rerender() {
-        this.renderWithColumns(this.currentFilter ?? null)
+        if(!this.currentFilter) {
+            this.currentFilter = () => true;
+        }
+
+        if(!this.currentSort) {
+            this.currentSort = () => 0;
+        }
+
+        this.renderWithColumns(this.getItems())
     }
 
     destroy() {
@@ -123,16 +131,44 @@ class GridWave {
     }
 
     /**
-     * @param {Function} [filterCallback]
+     * @param {HTMLElement[]} items The items to filter
+     * @returns {HTMLElement[]} The items in the container with filters applied
      */
-    renderWithColumns(filterCallback) {
-        if(!filterCallback) {
-            filterCallback = () => true;
-        }
+    getItemsWithFiltersApplied(items) {
+        return items.filter((item) => {
+            if(!this.currentFilter(item)) {
+                item.style.transform = "scale(0)";
+                item.style.opacity = "0";
+                item.setAttribute("data-gridwave-status", "hidden");
+                item.setAttribute("aria-hidden", "true");
+                return false;
+            }
+
+            item.style.transform = "";
+            item.style.opacity = "";
+            item.setAttribute("data-gridwave-status", "visible");
+            item.removeAttribute("aria-hidden");
+            return true;
+        });
+    }
+
+    /**
+     * @param {HTMLElement[]} items The items to sort
+     * @returns {HTMLElement[]} The items in the container with sort applied
+     */
+    getItemsWithSortApplied(items) {
+        return items.sort(this.currentSort);
+    }
+
+    /**
+     * @param {HTMLElement[]} items
+     */
+    renderWithColumns(items) {
+        items = this.getItemsWithFiltersApplied(items);
+        items = this.getItemsWithSortApplied(items);
 
         const columnAmount = this.currentConfig.columns ?? 1;
         const size = this.getContainerSize();
-        const items = this.getItems();
 
         const [gapX, gapY] = Array.isArray(this.currentConfig.gap) ? this.currentConfig.gap : [this.currentConfig.gap, this.currentConfig.gap];
 
@@ -141,26 +177,7 @@ class GridWave {
 
         const rowHeights = [];
 
-        let realIndex = -1;
-
-        const indexesInUse = [];
-
-        items.forEach((item, listIndex) => {
-            if(filterCallback(item) === false) {
-                item.style.transform = "scale(0)";
-                item.style.opacity = "0";
-                item.setAttribute("data-gridwave-status", "hidden");
-                item.setAttribute("aria-hidden", "true");
-                return;
-            }
-            realIndex++;
-
-            item.style.transform = "";
-            item.style.opacity = "";
-            item.setAttribute("data-gridwave-status", "visible");
-            item.removeAttribute("aria-hidden");
-            indexesInUse.push(listIndex);
-
+        items.forEach((item, realIndex) => {
             const rowIndex = Math.floor(realIndex / columnAmount);
             const columnIndex = realIndex % columnAmount;
 
@@ -175,7 +192,6 @@ class GridWave {
         });
 
         items
-            .filter((_, index) => indexesInUse.includes(index))
             .forEach((item, index) => {
                 const rowIndex = Math.floor(index / columnAmount);
                 item.style.top = `${rowHeights.slice(0, rowIndex).reduce((acc, curr) => acc + curr, 0) + (rowIndex * gapY)}px`;
@@ -197,7 +213,7 @@ class GridWave {
         let filterFn = filter;
 
         if(!filter || filter === true || filter?.length === 0) {
-            filter = "*";
+            filter = null;
         }
 
         if(typeof filter === "string") {
@@ -206,7 +222,22 @@ class GridWave {
 
         this.currentFilter = filterFn;
 
-        this.renderWithColumns(filterFn);
+        this.rerender();
+    }
+
+    /**
+     * @param {Function} [sortBy]
+     */
+    sort(sortBy) {
+        let sortFn = sortBy;
+
+        if(!sortBy) {
+            sortBy = null;
+        }
+
+        this.currentSort = sortFn;
+
+        this.rerender();
     }
 
 }

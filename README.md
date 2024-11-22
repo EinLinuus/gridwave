@@ -6,7 +6,7 @@
 
 ---
 
-# gridwave: Lightweight and animated JS filterable grid
+# Lightweight and animated JS filterable grid
 
 > Notice: gridwave is still in early development and might not be suitable for production use. Use at your own risk.
 > If you *do* use gridwave in a project and run into any issues, please let me know by opening an issue. Thank you! 💚
@@ -15,6 +15,7 @@
 - [HTML Structure](#html-structure)
 - [Initialization](#initialization)
 - [Filtering](#filtering)
+- [Sorting](#sorting)
 - [Animations](#animations)
 - [Responsive Grid](#responsive-grid)
 - [Complete Example](#complete-example)
@@ -90,6 +91,22 @@ You can also pass a callback function to the `filter` method. This function will
 grid.filter((item) => { // `item` is a DOM element
     return item.textContent.includes("1");
 });
+```
+
+## Sorting
+
+To sort the grid items, call the `sort` method with a callback function. This function will be called for each item to determine the sort order:
+
+```javascript
+grid.sort((a, b) => {
+    return a.textContent.localeCompare(b.textContent);
+});
+```
+
+To reset the sort order, call the `sort` method without any arguments:
+
+```javascript
+grid.sort();
 ```
 
 ## Animations
