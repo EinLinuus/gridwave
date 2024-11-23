@@ -4,7 +4,7 @@ declare(strict_types=1);
 $keys = ["blue", "red", "green", "orange"];
 $items = [];
 
-for($i = 0; $i < 10; $i++) {
+for($i = 0; $i < 50; $i++) {
     $items[] = [$keys[array_rand($keys)], rand(1, 30)];
 }
 
