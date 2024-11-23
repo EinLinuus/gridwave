@@ -1,3 +1,14 @@
+/**
+ * GridWave
+ *
+ * A simple and lightweight library to filter
+ * and sort elements, and it's even animated!
+ *
+ * @version 1.0.0
+ * @license MIT
+ * @author Linus Benkner
+ * @see https://github.com/EinLinuus/gridwave
+ */
 class GridWave {
     /**
      * @typedef {Object} GridWaveBreakpointConfig
@@ -171,8 +182,6 @@ class GridWave {
             item.style.width = "";
             item.style.left = "";
             item.style.top = "";
-            // item.style.transform = "";
-            // item.style.opacity = "";
             item.removeAttribute("data-gridwave-status");
             item.removeAttribute("aria-hidden");
         });
@@ -207,15 +216,11 @@ class GridWave {
     getItemsWithFiltersApplied(items) {
         return items.filter((item) => {
             if(!this.currentFilter(item)) {
-                // item.style.transform = "scale(0)";
-                // item.style.opacity = "0";
                 item.setAttribute("data-gridwave-status", "hidden");
                 item.setAttribute("aria-hidden", "true");
                 return false;
             }
 
-            // item.style.transform = "";
-            // item.style.opacity = "";
             item.setAttribute("data-gridwave-status", "visible");
             item.removeAttribute("aria-hidden");
             return true;
@@ -417,4 +422,10 @@ class GridWave {
         return sortedColumns.flat();
     }
 
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = GridWave;
+} else {
+    window.GridWave = GridWave;
 }

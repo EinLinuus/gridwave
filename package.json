@@ -1,0 +1,32 @@
+{
+  "name": "gridwave",
+  "version": "1.0.0",
+  "description": "A simple and lightweight library to filter and sort elements, and it's even animated!",
+  "main": "gridwave.js",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EinLinuus/gridwave.git"
+  },
+  "keywords": [
+    "filter",
+    "sort",
+    "animation",
+    "dom",
+    "ui"
+  ],
+  "author": "Linus Benkner",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/EinLinuus/gridwave/issues"
+  },
+  "homepage": "https://github.com/EinLinuus/gridwave#readme",
+  "files": [
+    "gridwave.js"
+  ]
+}
