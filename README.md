@@ -11,6 +11,8 @@
 > Notice: gridwave is still in early development and might not be suitable for production use. Use at your own risk.
 > If you *do* use gridwave in a project and run into any issues, please let me know by opening an issue. Thank you! 💚
 
+See [this example on CodePen](https://codepen.io/EinLinuus/pen/qBeevBE) for a quick demo, or head to [this code snippet](#complete-example) for a very basic example.
+
 - [Installation](#installation)
 - [HTML Structure](#html-structure)
 - [Initialization](#initialization)
