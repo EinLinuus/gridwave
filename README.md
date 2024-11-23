@@ -17,6 +17,7 @@
 - [Grid Options](#grid-options)
     - [Fixed Columns](#fixed-columns)
     - [Dynamic Columns](#dynamic-columns)
+    - [Masonry](#masonry)
 - [Filtering](#filtering)
 - [Sorting](#sorting)
 - [Animations](#animations)
@@ -111,6 +112,22 @@ grid.init({
 ```
 
 You can use the same gap options as with fixed columns (see above).
+
+### Masonry
+
+To create a masonry layout, set the `masonry` option to `true`:
+
+```javascript
+grid.init({
+    columns: 3,
+    gap: 16,
+    masonry: true,
+});
+```
+
+Masonry layouts can be used with both fixed and dynamic columns and also support responsive grids.
+
+> ⚠️ Note: Masonry layouts are *very* experimental. The columns may be very uneven and the layout might not look as expected. If you run into any issues, please let me know by opening an issue.
 
 ## Filtering
 

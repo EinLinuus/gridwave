@@ -8,6 +8,7 @@ class GridWave {
      * @property {Function} [renderer] A custom render function
      * @property {Number | false} [transition] The transition duration in ms or false to disable transitions
      * @property {String} [transitionMethod] The transition timing function
+     * @property {Boolean} [masonry] Whether the items should be displayed in a masonry layout
      *
      * @typedef {Object} GridWaveConfig
      * @property {String} [itemSelector] The selector for the items
@@ -18,6 +19,7 @@ class GridWave {
      * @property {Function} [renderer] A custom render function
      * @property {Number | false} [transition] The transition duration in ms or false to disable transitions
      * @property {String} [transitionMethod] The transition timing function
+     * @property {Boolean} [masonry] Whether the items should be displayed in a masonry layout
      * @property {Object.<string, GridWaveBreakpointConfig>} [breakpoints] The breakpoints
      *
      * @typedef {Object} GridWaveContainerSize
@@ -271,6 +273,10 @@ class GridWave {
 
         const [gapX, gapY] = Array.isArray(this.currentConfig.gap) ? this.currentConfig.gap : [this.currentConfig.gap, this.currentConfig.gap];
 
+        if(this.currentConfig.masonry) {
+            this.renderMasonryWithColumns(items, this.currentConfig.columns, gapX, gapY);
+            return;
+        }
         this.renderWithColumns(items, this.currentConfig.columns, gapX, gapY);
     }
 
@@ -297,6 +303,10 @@ class GridWave {
         const extensionColumnWidth = columnMinWidth + gapX;
         const columnAmount = Math.floor(availableWidthWithoutFirstColumn / extensionColumnWidth) + 1;
 
+        if(this.currentConfig.masonry) {
+            this.renderMasonryWithColumns(items, columnAmount, gapX, gapY);
+            return;
+        }
         this.renderWithColumns(items, columnAmount, gapX, gapY);
     }
 
@@ -329,19 +339,82 @@ class GridWave {
             }
         });
 
-        items
-            .forEach((item, index) => {
-                const rowIndex = Math.floor(index / columnAmount);
-                item.style.top = `${rowHeights.slice(0, rowIndex).reduce((acc, curr) => acc + curr, 0) + (rowIndex * gapY)}px`;
+        items.forEach((item, index) => {
+            const rowIndex = Math.floor(index / columnAmount);
+            item.style.top = `${rowHeights.slice(0, rowIndex).reduce((acc, curr) => acc + curr, 0) + (rowIndex * gapY)}px`;
 
-                if(this.currentConfig.sameHeight) {
-                    const currentRowHeight = rowHeights[rowIndex];
-                    item.style.height = `${currentRowHeight}px`;
-                }
-            });
+            if(this.currentConfig.sameHeight) {
+                const currentRowHeight = rowHeights[rowIndex];
+                item.style.height = `${currentRowHeight}px`;
+            }
+        });
 
         const totalHeight = rowHeights.reduce((acc, curr) => acc + curr, 0) + ((rowHeights.length - 1) * gapY);
         this.container.style.height = `${totalHeight}px`;
+    }
+
+    /**
+     * @param {HTMLElement[]} items
+     * @param {Number} columnAmount
+     * @param {Number} gapX
+     * @param {Number} gapY
+     */
+    renderMasonryWithColumns(items, columnAmount, gapX, gapY) {
+        items = this.sortItemsForMasonry(items, columnAmount);
+
+        const size = this.getContainerSize();
+
+        const usableWidth = size.width - ((columnAmount - 1) * gapX);
+        const columnWidth = usableWidth / columnAmount;
+
+        items.forEach((item, realIndex) => {
+            const rowIndex = Math.floor(realIndex / columnAmount);
+            const columnIndex = realIndex % columnAmount;
+
+            item.style.position = "absolute";
+            item.style.width = `${columnWidth}px`;
+            item.style.left = `${columnIndex * columnWidth + (columnIndex * gapX)}px`;
+
+            item.style.height = "";
+        });
+
+        let currentTotalHeightsOfColumns = [];
+
+        items.forEach((item, index) => {
+            const rowIndex = Math.floor(index / columnAmount);
+            const itemHeight = item.offsetHeight;
+            const columnIndex = index % columnAmount;
+            const heightOffset = currentTotalHeightsOfColumns[columnIndex] ?? 0;
+
+            console.log("Item " + index, columnIndex, itemHeight, heightOffset)
+
+            if(currentTotalHeightsOfColumns[columnIndex] === undefined) {
+                currentTotalHeightsOfColumns[columnIndex] = itemHeight + gapY;
+            } else {
+                currentTotalHeightsOfColumns[columnIndex] += itemHeight + gapY;
+            }
+
+            item.style.top = `${heightOffset}px`;
+        });
+
+        const totalHeight = Math.max(...currentTotalHeightsOfColumns);
+        this.container.style.height = `${totalHeight}px`;
+    }
+
+    /**
+     * @param {HTMLElement[]} items
+     * @param {Number} columnAmount
+     * @returns {HTMLElement[]} The items sorted for a masonry layout
+     */
+    sortItemsForMasonry(items, columnAmount) {
+        const columns = Array.from({ length: columnAmount }, () => []);
+        items.forEach((item, index) => {
+            columns[index % columnAmount].push(item);
+        });
+
+        const columnHeights = columns.map(column => column.reduce((acc, curr) => acc + curr.offsetHeight, 0));
+        const sortedColumns = columns.sort((a, b) => columnHeights[a] - columnHeights[b]);
+        return sortedColumns.flat();
     }
 
 }
