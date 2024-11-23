@@ -48,7 +48,7 @@ import GridWave from "gridwave";
 You can also include gridwave directly from a CDN:
 
 ```html
-<script src="https://www.unpkg.com/gridwave@1.0.0"></script>
+<script src="https://www.unpkg.com/gridwave@1.0.x"></script>
 ```
 
 ### Local Copy

@@ -4,7 +4,7 @@
  * A simple and lightweight library to filter
  * and sort elements, and it's even animated!
  *
- * @version 1.0.0
+ * @version 1.0.1
  * @license MIT
  * @author Linus Benkner
  * @see https://github.com/EinLinuus/gridwave

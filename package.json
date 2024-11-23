@@ -1,6 +1,6 @@
 {
   "name": "gridwave",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A simple and lightweight library to filter and sort elements, and it's even animated!",
   "main": "gridwave.js",
   "directories": {
