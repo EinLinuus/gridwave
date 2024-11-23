@@ -11,7 +11,7 @@
 > Notice: gridwave is still in early development and might not be suitable for production use. Use at your own risk.
 > If you *do* use gridwave in a project and run into any issues, please let me know by opening an issue. Thank you! 💚
 
-- [Introduction](#introduction)
+- [Installation](#installation)
 - [HTML Structure](#html-structure)
 - [Initialization](#initialization)
 - [Grid Options](#grid-options)
