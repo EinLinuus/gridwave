@@ -31,13 +31,33 @@
 
 ## Installation
 
-For now, there are no official CDN links or packages. To use gridwave, simply download the [`gridwave.js`](https://raw.githubusercontent.com/EinLinuus/gridwave/refs/heads/main/gridwave.js) file from this repository and include it in your project:
+### Package Manager
+
+You can use a package manager like npm to install gridwave:
+
+```bash
+npm install gridwave
+```
+
+```javascript
+import GridWave from "gridwave";
+```
+
+### CDN
+
+You can also include gridwave directly from a CDN:
+
+```html
+<script src="https://www.unpkg.com/happygallery@1.1.0"></script>
+```
+
+### Local Copy
+
+Or you can download the latest version from the [releases page](https://github.com/EinLinuus/gridwave/releases) and include it in your HTML file:
 
 ```html
 <script src="path/to/gridwave.js"></script>
 ```
-
-We plan to add CDN links and package managers in the future.
 
 ## HTML Structure
 
