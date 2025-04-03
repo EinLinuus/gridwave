@@ -4,7 +4,7 @@
  * A simple and lightweight library to filter
  * and sort elements, and it's even animated!
  *
- * @version 1.0.1
+ * @version 1.0.2
  * @license MIT
  * @author Linus Benkner
  * @see https://github.com/EinLinuus/gridwave
@@ -390,8 +390,6 @@ class GridWave {
             const itemHeight = item.offsetHeight;
             const columnIndex = index % columnAmount;
             const heightOffset = currentTotalHeightsOfColumns[columnIndex] ?? 0;
-
-            console.log("Item " + index, columnIndex, itemHeight, heightOffset)
 
             if(currentTotalHeightsOfColumns[columnIndex] === undefined) {
                 currentTotalHeightsOfColumns[columnIndex] = itemHeight + gapY;
